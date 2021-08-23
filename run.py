@@ -1,41 +1,58 @@
 # Your code goes here.
 # You can delete these comments, but do not change the name of this file
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
-import random
 import json
 from random import randrange
 
 lives = 7
 guesses = []
 done = False
+masked_word = ''
+current_word = ''
 
-def guess_attempt():
-    for letter in words:
-        if letter.lower() in guesses:
-            print(letter, end=" ")
-        else:
-            print("_", end=" ")
-    print("")
-
-def lives_left():
-    guess = input(f"Lives Left {lives}, Next Guess: ")
-    guesses.append(guess.lower())
-    if guess.lower() not in words.lower():
-        lives -= 1
-        if lives == 0:
-            break
-        
-   
-    done = True
-    for letter in words:
-        if letter.lower() not in guesses:
-            done = False
 
 def game_result():
     if done:
         print(f"Well done, you have won!  The word was {words}!")
     else:
         print(f"Game Over!  Better luck next time.  The word was {words}")
+
+
+def mask_current_word(word):
+    masked = []
+    for letter in word:
+        masked.append('_')
+    return ''.join(masked)
+
+
+def validate_letter_in_word(letter, word):
+    return letter.lower() in word.lower()
+
+
+def get_letter_guess():
+    letter = input(f"Input your guess: ")
+    return letter
+
+
+def update_masked_word(current_word, masked_word, current_letter):
+    masked_word_array = list(masked_word)
+    index = 0
+    for letter in current_word:
+        if letter.lower() == current_letter.lower():
+            masked_word_array[index] = letter
+        index += 1
+    return ''.join(masked_word_array)
+
+
+def play_word(current_word, masked_word, lives):
+    while lives > -1:
+        print('Challenge word: %s  Lives: %i' % (masked_word, lives))
+        current_letter = get_letter_guess()
+        if (validate_letter_in_word(current_letter, current_word)):
+            print('Check if won')
+        else:
+            lives -= 1
+        masked_word = update_masked_word(current_word, masked_word, current_letter)
 
 
 def read_words_from_json_file():
@@ -75,12 +92,6 @@ def get_random_word(level, words_array):
 if __name__ == '__main__':
     words_array = read_words_from_json_file()
     selected_level = select_game_level()
-    print('Random word', get_random_word(selected_level, words_array))
-
-    # Explains objectnavigation, you can delete
-    # easy_array_length = len(words_array['easy']) - 1
-    # random_index = randrange(easy_array_length)
-    # print('Random easy word:', words_array['easy'][random_index])
-    # print('Words easy: ', words_array['easy'][0])
-    # print('Words medium: ', words_array['medium'][0])
-    # print('Words hard: ', words_array['hard'][0])
+    current_word = get_random_word(selected_level, words_array)
+    masked_word = mask_current_word(current_word)
+    play_word(current_word, masked_word, lives)
