@@ -42,14 +42,6 @@ def get_letter_guess():
         else:
             print('You must enter an alphabetic character.')
     return letter
-    # if letter == '' or letter == ' ':
-    #     print("Empty input. Try again")
-    # elif letter in guesses:
-    #     print("You have already guessed that letter. Try again.")
-    # elif letter not in 'abcdefghijklmnopqrstuvwxyz':
-    #     print("You must enter an alphabetic character.")
-    # else:
-    # return letter
 
 
 def update_masked_word(current_word, masked_word, current_letter):
