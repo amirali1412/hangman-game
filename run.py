@@ -11,11 +11,11 @@ masked_word = ''
 current_word = ''
 
 
-def game_result():
-    if done:
-        print(f"Well done, you have won!  The word was {words}!")
+def game_result(user_won, word):
+    if user_won:
+        print(f"Well done, you have won!  The word was {word}!")
     else:
-        print(f"Game Over!  Better luck next time.  The word was {words}")
+        print(f"Game Over!  Better luck next time.  The word was {word}")
 
 
 def mask_current_word(word):
@@ -30,8 +30,26 @@ def validate_letter_in_word(letter, word):
 
 
 def get_letter_guess():
-    letter = input(f"Input your guess: ")
+    retry_input_guess = True
+    guess_options = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    while retry_input_guess:
+        letter = input(f"Input your guess: ")
+        if letter.upper() in guess_options:
+            if letter.upper() in guesses:
+                print("You have already guessed that letter. Try again.")
+            else:
+                retry_input_guess = False
+        else:
+            print('You must enter an alphabetic character.')
     return letter
+    # if letter == '' or letter == ' ':
+    #     print("Empty input. Try again")
+    # elif letter in guesses:
+    #     print("You have already guessed that letter. Try again.")
+    # elif letter not in 'abcdefghijklmnopqrstuvwxyz':
+    #     print("You must enter an alphabetic character.")
+    # else:
+    # return letter
 
 
 def update_masked_word(current_word, masked_word, current_letter):
@@ -44,15 +62,22 @@ def update_masked_word(current_word, masked_word, current_letter):
     return ''.join(masked_word_array)
 
 
+def check_if_user_won(current_word, masked_word):
+    return masked_word.lower() == current_word.lower()
+
+
 def play_word(current_word, masked_word, lives):
-    while lives > -1:
+    user_won_game = False
+    while (lives > 0) and (user_won_game is False):
         print('Challenge word: %s  Lives: %i' % (masked_word, lives))
         current_letter = get_letter_guess()
+        guesses.append(current_letter.upper())
         if (validate_letter_in_word(current_letter, current_word)):
-            print('Check if won')
+            masked_word = update_masked_word(current_word, masked_word, current_letter)
+            user_won_game = check_if_user_won(current_word, masked_word)
         else:
             lives -= 1
-        masked_word = update_masked_word(current_word, masked_word, current_letter)
+    game_result(user_won_game, current_word)    
 
 
 def read_words_from_json_file():
@@ -70,7 +95,14 @@ def read_words_from_json_file():
 
 
 def select_game_level():
-    level = input(f"Select game level: Type 1- Easy, 2- Medium, 3- hard ")
+    retry_get_level = True
+    level_options = ['1', '2', '3']
+    while retry_get_level:
+        level = input(f"Select game level: Type 1- Easy, 2- Medium, 3- hard ")
+        if level in level_options:
+            retry_get_level = False
+        else:
+            print('Please enter a valid option (1, 2 or 3)')
     return int(level)
 
 
@@ -89,9 +121,26 @@ def get_random_word(level, words_array):
     return random_word
 
 
+def playAgain():
+    retry_play_again = True
+    available_options = ['N', 'Y', 'NO', 'YES']
+    while retry_play_again:
+        print('Do you want to play again? (yes or no)')
+        option = input().upper()
+        if option in available_options:
+            retry_play_again = False
+    return option.startswith('Y')
+
+
 if __name__ == '__main__':
     words_array = read_words_from_json_file()
-    selected_level = select_game_level()
-    current_word = get_random_word(selected_level, words_array)
-    masked_word = mask_current_word(current_word)
-    play_word(current_word, masked_word, lives)
+    play_game = True
+    while play_game:
+        selected_level = select_game_level()
+        current_word = get_random_word(selected_level, words_array)
+        masked_word = mask_current_word(current_word)
+        play_word(current_word, masked_word, lives)
+        lives = 7
+        guesses = []
+        play_game = playAgain()
+    print('Thank you for playing')
