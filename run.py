@@ -33,7 +33,7 @@ def get_letter_guess():
     retry_input_guess = True
     guess_options = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     while retry_input_guess:
-        letter = input(f"Input your guess: ")
+        letter = input(f"Input your guess:/n ")
         if letter.upper() in guess_options:
             if letter.upper() in guesses:
                 print("You have already guessed that letter. Try again.")
